@@ -15,7 +15,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3002"],
+    allow_origins=["http://localhost:3003"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],  
     allow_headers=["*"],  
@@ -99,12 +99,9 @@ async def delete_cv(db: db_dependency, cv_id:int = Path(gt=0)):
     db.commit()
 
 
-@app.get("/review_cv/{cv_id}",response_model=CVReviewResponse,status_code=status.HTTP_200_OK)
-async def review_cv_endpoint(
-    db: Session = Depends(get_db),
-    cv_id: int = Path(gt=0)
-):
-
+@app.get("/review_cv/{cv_id}",status_code=status.HTTP_200_OK,response_model=CVReviewResponse)
+async def review_cv_endpoint(db: db_dependency,cv_id: int = Path(gt=0)):
+    print("Database Session:", db) 
     cv_model = db.query(CVs).filter(CVs.id == cv_id).first()
     
     if cv_model is None:
@@ -114,10 +111,12 @@ async def review_cv_endpoint(
         "name": cv_model.name,
         "education": cv_model.education,
         "experience": cv_model.experience,
-        "skill": cv_model.skill,
+        "skills": cv_model.skill,
         "summary": cv_model.summary,
     }
 
-    review_response = review_cv(cv_data)
-
-    return review_response
+    try:
+        review_response = review_cv(cv_data)
+        return review_response
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
