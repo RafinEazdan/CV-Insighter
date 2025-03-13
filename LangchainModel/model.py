@@ -20,7 +20,7 @@ def review_cv(cv_data):
     Summary: {cv_data['summary']}
 
     Provide your response in JSON format:
-    {{"rating": <score>, "profession_recommendation": "<profession>"}}
+    {{"rating": <score>,"rating analysis":"<analysis at most 100 words>", "profession_recommendation": "<profession>"}}
     """
 
     response = model.invoke([HumanMessage(content=prompt)])

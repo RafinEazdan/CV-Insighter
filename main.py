@@ -1,13 +1,25 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Path
+from LangchainModel.model import review_cv
 import Models.models
 from Models.models import CVs
 from Database.database import engine, SessionLocal
 from typing import Annotated, List
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr, Field
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3002"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  
+    allow_headers=["*"],  
+)
 
 Models.models.Base.metadata.create_all(bind=engine)
 
@@ -30,6 +42,13 @@ class CVRequest(BaseModel):
     skill: List[str] = Field(default=[])
     summary: str = Field(min_length = 0, max_length=1000)
 
+#Langchain Model
+class CVReviewResponse(BaseModel):
+    rating: int
+    rating_analysis: str
+    profession_recommendation: str
+
+
 
 @app.get("/", status_code = status.HTTP_200_OK)
 async def read_all(db: db_dependency):
@@ -51,7 +70,7 @@ async def create_cv(db: db_dependency, cv_request: CVRequest):
 
     db.add(cv_model)
     db.commit()
-
+    return {"id": cv_model.id}
 
 @app.put("/cv/{cv_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_cv(db: db_dependency,cv_request:CVRequest,cv_id:int = Path(gt=0)):
@@ -78,3 +97,27 @@ async def delete_cv(db: db_dependency, cv_id:int = Path(gt=0)):
         raise HTTPException(status_code=404, detail='CV not found.')
     db.query(CVs).filter(CVs.id == cv_id).delete()
     db.commit()
+
+
+@app.get("/review_cv/{cv_id}",response_model=CVReviewResponse,status_code=status.HTTP_200_OK)
+async def review_cv_endpoint(
+    db: Session = Depends(get_db),
+    cv_id: int = Path(gt=0)
+):
+
+    cv_model = db.query(CVs).filter(CVs.id == cv_id).first()
+    
+    if cv_model is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="CV not found")
+
+    cv_data = {
+        "name": cv_model.name,
+        "education": cv_model.education,
+        "experience": cv_model.experience,
+        "skill": cv_model.skill,
+        "summary": cv_model.summary,
+    }
+
+    review_response = review_cv(cv_data)
+
+    return review_response
