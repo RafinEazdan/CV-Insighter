@@ -1,4 +1,4 @@
-# FastAPI CV Reviewer
+# CV Insighter : A FastAPI CV Reviewer  
 
 This project is a FastAPI-based application that reviews CVs using Groq AI's API. It evaluates CV data, provides a rating (1-10), and suggests a suitable profession based on the information provided. The application uses PostgreSQL as the database and SQLAlchemy for ORM, with Llama 3-8B as the chat model.
 
@@ -83,7 +83,36 @@ POST /review-cv/
   "profession_recommendation": "Software Developer"
 }
 ```
+### Compare Between two or more CVs 
+```http
+POST /compare-cv/
+```
 
+**Request Body:**
+```json
+{
+  "cv_list": [
+    Id_of_CV_1,
+    ID_of_CV_2
+  ]
+}
+```
+**Response:**
+```json
+{
+  "industry_recommendations": [
+    {
+      "cv_index": 0,
+      "industry": "Museums and Archives"
+    },
+    {
+      "cv_index": 1,
+      "industry": "Research and Development in Physics"
+    }
+  ],
+  "summary_analysis": "The first CV is well-suited for the museums and archives industry due to the candidate's background in history and experience as an archivist. The second CV is suitable for the research and development industry in physics, given the candidate's education and experience in the field."
+}
+```
 
 ## Contributions
 Feel free to fork the repo, open issues, and submit pull requests!
