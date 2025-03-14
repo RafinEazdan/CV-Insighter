@@ -49,12 +49,12 @@ class CVReviewResponse(BaseModel):
     profession_recommendation: str
 
 
-
+#Get all the CVs
 @app.get("/", status_code = status.HTTP_200_OK)
 async def read_all(db: db_dependency):
     return db.query(CVs).all()
 
-
+#Get a specific CV
 @app.get("/cv/{cv_id}",status_code = status.HTTP_200_OK)
 async def read_cv(db: db_dependency, cv_id:int = Path(gt=0)):
     cv_model = db.query(CVs).filter(CVs.id == cv_id).first()
@@ -63,7 +63,7 @@ async def read_cv(db: db_dependency, cv_id:int = Path(gt=0)):
     raise HTTPException(status_code= 404, detail="CV not found.")
 
 
-
+#Create a new CV
 @app.post("/cv",status_code=status.HTTP_201_CREATED)
 async def create_cv(db: db_dependency, cv_request: CVRequest):
     cv_model = CVs(**cv_request.dict())
@@ -72,6 +72,7 @@ async def create_cv(db: db_dependency, cv_request: CVRequest):
     db.commit()
     return {"id": cv_model.id}
 
+#Update a CV
 @app.put("/cv/{cv_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_cv(db: db_dependency,cv_request:CVRequest,cv_id:int = Path(gt=0)):
     cv_model = db.query(CVs).filter(CVs.id == cv_id).first()
@@ -89,7 +90,7 @@ async def update_cv(db: db_dependency,cv_request:CVRequest,cv_id:int = Path(gt=0
     db.add(cv_model)
     db.commit()
 
-
+#Delete a CV
 @app.delete("/cv/{cv_id}",status_code=status.HTTP_204_NO_CONTENT)
 async def delete_cv(db: db_dependency, cv_id:int = Path(gt=0)):
     cv_model = db.query(CVs).filter(CVs.id ==cv_id).first()
@@ -99,6 +100,7 @@ async def delete_cv(db: db_dependency, cv_id:int = Path(gt=0)):
     db.commit()
 
 
+#Review a CV
 @app.get("/review_cv/{cv_id}",status_code=status.HTTP_200_OK,response_model=CVReviewResponse)
 async def review_cv_endpoint(db: db_dependency,cv_id: int = Path(gt=0)):
     print("Database Session:", db) 
