@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Path
-from LangchainModel.model import review_cv
+from LangchainModel.model import review_cv, compare_cvs
 import Models.models
 from Models.models import CVs
 from Database.database import engine, SessionLocal
@@ -31,6 +31,14 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+
+#compare cv class
+class CVCompareRequest(BaseModel):
+    cv_list: List[int] = Field(min_items=2)
+
+class CVCompareResponse(BaseModel):
+    industry_recommendations: List[dict]
+    summary_analysis: str = Field(max_length=1000)
 
 
 class CVRequest(BaseModel):
@@ -120,5 +128,29 @@ async def review_cv_endpoint(db: db_dependency,cv_id: int = Path(gt=0)):
     try:
         review_response = review_cv(cv_data)
         return review_response
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+#Compare CVs
+@app.post("/compare_cv",status_code=status.HTTP_200_OK,response_model=CVCompareResponse)
+async def compare_cvs_endpoint(db: db_dependency, request: CVCompareRequest):
+    cv_models = db.query(CVs).filter(CVs.id.in_(request.cv_list)).all()
+    print(cv_models)
+    if len(cv_models) < 2:
+        raise HTTPException(status_code=400, detail="At least two valid CVs are required for comparison.")
+
+    cv_list = []
+    for cv in cv_models:
+        cv_list.append({
+            "education": cv.education,
+            "experience": cv.experience,
+            "skills": cv.skill,
+            "summary": cv.summary,
+        })
+
+    try:
+        comparison_response = compare_cvs(cv_list)
+        return comparison_response
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))

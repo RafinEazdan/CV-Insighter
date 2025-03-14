@@ -19,7 +19,6 @@ def review_cv(cv_data):
     prompt = f"""
     Review the following CV and rate it on a scale of 1 to 10. Also, recommend the most suitable profession.
 
-    Name: {cv_data['name']}
     Education: {cv_data['education']}
     Experience: {cv_data['experience']}
     Skills: {cv_data['skills']}
@@ -33,5 +32,31 @@ def review_cv(cv_data):
     try:
         response_dict = json.loads(response)
         return response_dict
+    except json.JSONDecodeError:
+        raise ValueError("Invalid JSON response from AI model")
+    
+
+
+def compare_cvs(cv_list):
+    prompt = f"""
+    Compare the following CVs and determine which industry and which stack for each CV is best suited for. Like if a cv is suited for software engineer than also select which stack fronend or backend or fullstack. like a cv is suited businessman than which type of business. Provide a detailed analysis for the decision.
+
+    CVs:
+    {json.dumps(cv_list, indent=2)}
+
+    Provide your response in JSON format only, with no additional text:
+    {{
+        "industry_recommendations": [
+            {{"cv_index": <index>, "industry": "<industry>"}},
+            ...
+        ],
+        "summary_analysis": "<summary of the decision at most 100 words>"
+    }}
+    """
+
+    response = model.invoke([HumanMessage(content=prompt)]).content
+    try:
+        response_list = json.loads(response)
+        return response_list
     except json.JSONDecodeError:
         raise ValueError("Invalid JSON response from AI model")
