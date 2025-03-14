@@ -39,15 +39,15 @@ def review_cv(cv_data):
 
 def compare_cvs(cv_list):
     prompt = f"""
-    Compare the following CVs and determine which industry and which stack for each CV is best suited for. Like if a cv is suited for software engineer than also select which stack fronend or backend or fullstack. like a cv is suited businessman than which type of business. Provide a detailed analysis for the decision.
+    Compare the CVs and identify the best industry and role for each cv.  Like if a cv is suited for software engineer than also select which stack fronend or backend or fullstack. like a cv is suited businessman than which type of business. Provide a detailed explanation for your choices.
 
     CVs:
     {json.dumps(cv_list, indent=2)}
-
+    In the summary_analysis, use the person's first name (e.g., Alice) instead of indexing the CVs.
     Provide your response in JSON format only, with no additional text:
     {{
         "industry_recommendations": [
-            {{"cv_index": <index>, "industry": "<industry>"}},
+            {{"cv_index": <index>,"industry": "<industry>"}},
             ...
         ],
         "summary_analysis": "<summary of the decision at most 100 words>"

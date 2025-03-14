@@ -143,6 +143,7 @@ async def compare_cvs_endpoint(db: db_dependency, request: CVCompareRequest):
     cv_list = []
     for cv in cv_models:
         cv_list.append({
+            "name": cv.name,
             "education": cv.education,
             "experience": cv.experience,
             "skills": cv.skill,
