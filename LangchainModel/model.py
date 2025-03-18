@@ -4,14 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-#
-# if not GROQ_API_KEY:
-#     raise ValueError("GROQ_API_KEY is not set in the environment variables.")
-
-# model = init_chat_model("llama3-8b-8192", model_provider="groq")
 model = ChatOllama(model="llama3.2")
-
 
 def review_cv(cv_data):
     prompt = f"""
