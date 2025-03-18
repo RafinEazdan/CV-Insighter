@@ -13,7 +13,8 @@ This project is a FastAPI-based application that reviews CVs using Groq AI's API
 ## Technologies Used
 
 - **FastAPI** - Web framework for building APIs.
-- **Groq AI API** - AI-powered analysis using Llama 3-8B.
+- **Groq AI API** - AI-powered analysis using Llama 3-8B. #Previous version
+- **Llama3.2-8b** - Locally ran model through Ollama. #Newer Version
 - **PostgreSQL** - Database for storing CV data.
 - **SQLAlchemy** - ORM for database interaction.
 - **Pydantic** - Data validation and serialization.
@@ -23,13 +24,13 @@ This project is a FastAPI-based application that reviews CVs using Groq AI's API
 ### Prerequisites
 - Python 3.9+
 - PostgreSQL database
-- Groq AI API Key
+- Ollama Llama3.2 model
 
 ### Setup
 1. Clone the repository:
    ```sh
    git clone https://github.com/RafinEazdan/CV-Insighter.git
-   cd CV-Insighter
+   cd CV_Insighter
    ```
 
 2. Create and activate a virtual environment:
@@ -46,7 +47,6 @@ This project is a FastAPI-based application that reviews CVs using Groq AI's API
 4. Set up environment variables:
    ```sh
    export DATABASE_URL="postgresql://user:password@localhost:5432/cv_db"
-   export GROQ_API_KEY="your_groq_api_key"
    ```
 
 5. Apply database migrations:
