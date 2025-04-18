@@ -5,7 +5,7 @@ This project is a FastAPI-based application that reviews CVs using Groq AI's API
 ## Features
 
 - Accepts CV data including name, education, experience, skills, and summary.
-- Sends CV data to Groq AI's Llama 3-8B model for review and rating.
+- Sends CV data to Ollama's Llama 3-8B model for review and rating.
 - Provides a profession recommendation based on AI analysis.
 - Uses PostgreSQL as the database backend.
 - Implements SQLAlchemy for ORM.
@@ -13,7 +13,6 @@ This project is a FastAPI-based application that reviews CVs using Groq AI's API
 ## Technologies Used
 
 - **FastAPI** - Web framework for building APIs.
-- **Groq AI API** - AI-powered analysis using Llama 3-8B. #Previous version
 - **Llama3.2-8b** - Locally ran model through Ollama. #Newer Version
 - **PostgreSQL** - Database for storing CV data.
 - **SQLAlchemy** - ORM for database interaction.
